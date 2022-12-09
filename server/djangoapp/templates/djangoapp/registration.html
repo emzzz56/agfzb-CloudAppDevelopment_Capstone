@@ -6,6 +6,83 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
     <body>
-    <!--Add a registration form here -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Best Cars Dealership</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'djangoapp:index' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                </li>
+              </ul>
+    
+                <ul class="nav navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Username" name="username" >
+                                <input type="password" class="form-control" placeholder="Password" name="psw" >
+                                <button class="btn btn-primary" type="submit">Login</button>
+                                <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                            </div>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+    
+            </div>
+            
+          </nav>
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-6 mx-auto">
+                    <form action="{% url 'djangoapp:registration' %}" method="post">
+                          <h1>Sign Up</h1>
+                          <hr>
+                          <div class="form-group">
+                            <label for="username"><b>User Name</b></label>
+                            <input type="text" class="form-control" placeholder="Enter User Name: " name="username" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="firstname"><b>First Name</b></label>
+                            <input type="text" class="form-control" placeholder="Enter First Name: " name="first_name" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="lastname"><b>Last Name</b></label>
+                            <input type="text" class="form-control" placeholder="Enter Last Name: " name="last_name" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="psw"><b>Password</b></label>
+                            <input type="password" class="form-control" placeholder="Enter Password: " name="password" required>
+                          </div>
+                          <div>
+                              {% csrf_token %}
+                              <button class="btn btn-primary" type="submit">Sign Up</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+        
+
+        <footer class="page-footer font-small blue pt-4">
+            <div class="footer-copyright text-center py-3"><a href="{% url 'djangoapp:index' %}">Home </a> | <a href="{% url 'djangoapp:about' %}">About Us</a> | <a href="{% url 'djangoapp:contact' %}">Contact Us</a> <br><br>© 2022 Copyright
+            </div>      
+          </footer>
     </body>
 </html>
