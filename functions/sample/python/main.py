@@ -3,11 +3,6 @@ from ibmcloudant.cloudant_v1 import CloudantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 def main(dict): 
-    secret={ 
-        "COUCH_URL": "https://a3e831a7-3fd2-4af1-85d9-47314a35c061-bluemix.cloudantnosqldb.appdomain.cloud", 
-        "IAM_API_KEY": "svSiBPYc-GI-Fc72Mrb7bg0kozHZnXgx5i4-pMoj6Wxe", 
-        "COUCH_USERNAME": "a3e831a7-3fd2-4af1-85d9-47314a35c061-bluemix" 
-        } 
 
     authenticator = IAMAuthenticator("svSiBPYc-GI-Fc72Mrb7bg0kozHZnXgx5i4-pMoj6Wxe")
 
