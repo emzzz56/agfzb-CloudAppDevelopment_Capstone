@@ -32,7 +32,7 @@ def post_request(url, json_payload, **kwargs):
     print(kwargs)
     print("POST to {} ".format(url))
     try:
-        response = requests.post(url, headers={'Content-Type': 'application/json'}, params=kwargs, json=json_payload)
+        response = requests.post(url, params=kwargs, json=json_payload)
     except:
         # If any error occurs
         print("Network exception occurred")
@@ -70,10 +70,10 @@ def get_dealers_from_cf(url, **kwargs):
 
     return results
 
-def get_dealer_by_id(url, **kwargs):
+def get_dealer_by_id(url, dealer_id):
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url, dealerId=dealerId)
+    json_result = get_request(url, dealerId=dealer_id)
     if json_result:
         # Get the row list in JSON as dealers
         dealers = json_result["result"]
