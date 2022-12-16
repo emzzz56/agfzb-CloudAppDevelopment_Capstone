@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 from .models import CarDealer, DealerReview, CarMake, CarModel
 from .restapis import get_dealers_from_cf, get_request, get_dealer_reviews_from_cf, post_request, get_dealer_by_id
 from django.contrib.auth import login, logout, authenticate
@@ -9,6 +9,7 @@ from django.contrib import messages
 from datetime import datetime
 import logging
 import json
+import time
 
 # Get an instance of a logger 
 logger = logging.getLogger(__name__)
@@ -125,12 +126,13 @@ def add_review(request, dealer_id):
                 reviewsDict["purchase"] = "True"
             reviewsDict["name"] = request.user.username
             reviewsDict["car_make"] = CarModel.objects.filter(id=car).values('carmake_id')[0]["carmake_id"]
+            reviewsDict["car_make"] = CarMake.objects.filter(id=reviewsDict["car_make"]).values('name')[0]["name"]
             reviewsDict["car_model"]  = CarModel.objects.filter(id=car).values('name')[0]["name"]
             reviewsDict["car_year"] = CarModel.objects.filter(id=car).values('year')[0]["year"].strftime("%Y")
-            reviewsDict["id"] = 2010
+            reviewsDict["car_year"] = int(reviewsDict["car_year"])
             reviewsDict["review"] = request.POST["content"]
+            reviewsDict["another"] = ""
            
-            print(reviewsDict)
             json_payload["review"] = reviewsDict
             
             url = 'https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/post-review.json'
