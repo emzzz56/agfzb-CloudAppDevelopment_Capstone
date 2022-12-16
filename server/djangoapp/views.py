@@ -97,6 +97,7 @@ def get_dealer_details(request, dealer_id):
         url = "https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/get-review.json"
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
 
+
         url = "https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/get-dealership.json"
         # Get dealers from the URL
         dealer = get_dealer_by_id(url, dealer_id)
@@ -110,32 +111,37 @@ def get_dealer_details(request, dealer_id):
 def add_review(request, dealer_id):
     context = {}
     context["dealer_id"] = dealer_id
+    print(request.method)
     if request.method == "POST":
         if request.user.is_authenticated:
-            review = dict()
+            reviewsDict = dict()
             json_payload = dict()
-            review["time"] = datetime.utcnow().isoformat()
-            review["dealership"] = dealer_id
-            review["id"] = "1404"
-            review["review"] = request.post["review"]
-            review["purchase"] = "False"
-            review["name"] = "John"
-            review["car_make"] = "Audi"
-            review["car_model"]  = "Car"
-            review["car_year"] = "2021"
-            review["purchase_date"] =  "02/16/2021"
-            review["another"] = "field"
-
-            json_payload["review"] = review
+            car = request.POST["car"]
+            reviewsDict["time"] = datetime.utcnow().isoformat()
+            reviewsDict["dealership"] = dealer_id
+            reviewsDict["purchase_date"] =  request.POST["purchasedate"]
+            reviewsDict["purchase"] = "False"
+            if reviewsDict["purchase_date"]:
+                reviewsDict["purchase"] = "True"
+            reviewsDict["name"] = request.user.username
+            reviewsDict["car_make"] = CarModel.objects.filter(id=car).values('carmake_id')[0]["carmake_id"]
+            reviewsDict["car_model"]  = CarModel.objects.filter(id=car).values('name')[0]["name"]
+            reviewsDict["car_year"] = CarModel.objects.filter(id=car).values('year')[0]["year"].strftime("%Y")
+            reviewsDict["id"] = 2010
+            reviewsDict["review"] = request.POST["content"]
+           
+            print(reviewsDict)
+            json_payload["review"] = reviewsDict
             
             url = 'https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/post-review.json'
 
             response = post_request(url, json_payload, dealerId=dealer_id)
 
-        redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+        return redirect('djangoapp:index')
         
     else:
-        url = "https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/get-dealership.json"
+        
+        url = "https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/get-dealership.json?dealerId="
         dealer = get_dealer_by_id(url, dealer_id)
         context["dealer"] = dealer[0]
         context["cars"] = CarModel.objects.all()

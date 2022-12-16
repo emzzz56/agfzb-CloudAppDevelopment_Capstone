@@ -31,11 +31,8 @@ def get_request(url, **kwargs):
 def post_request(url, json_payload, **kwargs):
     print(kwargs)
     print("POST to {} ".format(url))
-    try:
-        response = requests.post(url, params=kwargs, json=json_payload)
-    except:
-        # If any error occurs
-        print("Network exception occurred")
+    response = requests.post(url, params=kwargs, json=json_payload)
+    
 
     status_code = response.status_code
     print("With status {} ".format(status_code))
@@ -70,10 +67,10 @@ def get_dealers_from_cf(url, **kwargs):
 
     return results
 
-def get_dealer_by_id(url, dealer_id):
+def get_dealer_by_id(url, id):
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url, dealerId=dealer_id)
+    json_result = get_request(url, sid=id)
     if json_result:
         # Get the row list in JSON as dealers
         dealers = json_result["result"]
@@ -81,7 +78,7 @@ def get_dealer_by_id(url, dealer_id):
         # For each dealer object
         for dealer in dealers:
             # Get its content in `doc` object
-            dealer_doc = dealer["doc"]
+            dealer_doc = dealer
             # Create a CarDealer object with values in `doc` object
             dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
                                    id=dealer_doc["id"], lat=dealer_doc["lat"], long=dealer_doc["long"],

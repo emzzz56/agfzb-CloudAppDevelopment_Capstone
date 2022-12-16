@@ -53,7 +53,7 @@
           <div class="container" style="margin-top:30px">
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <h1>Reviews for {{dealer.full_name}} Dealership</h1><br>
+                    <h1>Reviews for {{dealer.full_name}}</h1><br>
                     {% if user.is_authenticated %}          
                         <a href="{% url 'djangoapp:add_review' dealer_id %}" class="btn btn-primary">Add Review</a>
                     {% endif %}
