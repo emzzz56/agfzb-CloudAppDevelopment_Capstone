@@ -82,8 +82,6 @@ def get_dealerships(request):
         url = "https://us-east.functions.appdomain.cloud/api/v1/web/2bda4203-74dd-4183-b1cb-62a99d3efd8e/dealership-package/get-dealership.json"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        # dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
         context["dealerships"] = dealerships
         # Return a list of dealer short name
         return render(request, 'djangoapp/index.html', context)
@@ -112,7 +110,6 @@ def get_dealer_details(request, dealer_id):
 def add_review(request, dealer_id):
     context = {}
     context["dealer_id"] = dealer_id
-    print(request.method)
     if request.method == "POST":
         if request.user.is_authenticated:
             reviewsDict = dict()
@@ -120,10 +117,15 @@ def add_review(request, dealer_id):
             car = request.POST["car"]
             reviewsDict["time"] = datetime.utcnow().isoformat()
             reviewsDict["dealership"] = dealer_id
-            reviewsDict["purchase_date"] =  request.POST["purchasedate"]
             reviewsDict["purchase"] = "False"
-            if reviewsDict["purchase_date"]:
-                reviewsDict["purchase"] = "True"
+            reviewsDict["purchase_date"] = "";
+           
+            if "purchasecheck" in request.POST:
+                    if request.POST["purchasecheck"] == 'on':
+                        reviewsDict["purchase"] = "True"
+                        reviewsDict["purchase_date"] = request.POST["purchasedate"]
+                        
+
             reviewsDict["name"] = request.user.username
             reviewsDict["car_make"] = CarModel.objects.filter(id=car).values('carmake_id')[0]["carmake_id"]
             reviewsDict["car_make"] = CarMake.objects.filter(id=reviewsDict["car_make"]).values('name')[0]["name"]
@@ -139,7 +141,7 @@ def add_review(request, dealer_id):
 
             response = post_request(url, json_payload, dealerId=dealer_id)
 
-        return redirect('djangoapp:index')
+        return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
         
     else:
         

@@ -154,17 +154,19 @@ def analyze_review_sentiments(dealerreview):
     )
     natural_language_understanding.set_service_url('https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/911069a2-acbf-4e31-9351-d79699696dc9')
 
+
     json_result = natural_language_understanding.analyze(
     text=dealerreview,
     features=Features(sentiment=SentimentOptions())).get_result()
 
     # url='https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/911069a2-acbf-4e31-9351-d79699696dc9'
     # json_result = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
-    #                                 auth=HTTPBasicAuth('apikey', api_key))
+    #  
+    #                                auth=HTTPBasicAuth('apikey', api_key))
     if json_result:
          # Get the analyzed text
         results = json_result['sentiment']['document']['label']
-
+        
     return results 
 
 

@@ -66,7 +66,9 @@
                                     <h2>{{review.name}}</h2>
                                     {{review.review}}<br>
                                     {{review.purchase_date}}<br>
-                                    {{review.car_make}} | {{review.car_model}}
+                                    {% if review.car_make%}
+                                        {{review.car_make}} | {{review.car_model}} {{review.car_year}}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
