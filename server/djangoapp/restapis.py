@@ -12,10 +12,21 @@ from ibm_watson.natural_language_understanding_v1 import Features, SentimentOpti
 #                                     auth=HTTPBasicAuth('apikey', api_key))
 
 def get_request(url, **kwargs):
-    print(kwargs)
+    api_key = kwargs.get("api_key")
     print("GET from {} ".format(url))
     try:
-        response = requests.get(url, headers={'Content-Type': 'application/json'},params=kwargs)
+        if api_key:
+            params = dict()
+            params["text"] = kwargs["text"]
+            params["version"] = kwargs["version"]
+            params["features"] = kwargs["features"]
+            params["return_analyzed_text"] = kwargs["return_analyzed_text"]
+            response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
+                                    auth=HTTPBasicAuth('apikey', api_key))
+        else:
+            # Call get method of requests library with URL and parameters
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                    params=kwargs)
     except:
         # If any error occurs
         print("Network exception occurred")
@@ -119,21 +130,14 @@ def get_dealers_by_state(url, **kwargs):
 
 def get_dealer_reviews_from_cf(url, dealer_id):
     results = []
-    # Call get_request with a URL parameter
-    # dealerId = request.GET['dealerId']
     json_result = get_request(url, dealerId=dealer_id)
     if json_result:
-        # Get the row list in JSON as dealers
-        dealers = json_result["body"]["data"]
-
-        # For each dealer object
-        for dealer in dealers:
-            # Get its content in `doc` object
-            # dealer_doc = dealer["docs"]
-            # Create a CarDealer object with values in `doc` object
-            review_obj = DealerReview(name=dealer["name"], purchase=dealer["purchase"], review=dealer["review"],
-                                   purchase_date=dealer["purchase_date"], car_make=dealer["car_make"], car_model=dealer["car_model"],
-                                   car_year=dealer["car_year"], dealership=dealer["dealership"])
+        reviews = json_result["body"]["data"]
+        
+        for review in reviews:
+            review_obj = DealerReview(name=review["name"], purchase=review["purchase"], review=review["review"],
+                                   purchase_date=review["purchase_date"], car_make=review["car_make"], car_model=review["car_model"],
+                                   car_year=review["car_year"], dealership=review["dealership"])
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
 
@@ -156,15 +160,10 @@ def analyze_review_sentiments(dealerreview):
 
 
     json_result = natural_language_understanding.analyze(
-    text=dealerreview,
+    text=dealerreview+" test test test",
     features=Features(sentiment=SentimentOptions())).get_result()
 
-    # url='https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/911069a2-acbf-4e31-9351-d79699696dc9'
-    # json_result = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
-    #  
-    #                                auth=HTTPBasicAuth('apikey', api_key))
     if json_result:
-         # Get the analyzed text
         results = json_result['sentiment']['document']['label']
         
     return results 
